@@ -7,6 +7,7 @@ import Onboarding from './views/Onboarding';
 import Dashboard from './views/Dashboard';
 import Analytics from './views/Analytics';
 import Profile from './views/Profile';
+import Transactions from './views/Transactions';
 import AddTransactionModal from './components/AddTransactionModal';
 import Tour, { Step } from './components/Tour';
 
@@ -106,6 +107,14 @@ const App: React.FC = () => {
             expenses={transactions} 
             onAddClick={() => setIsModalOpen(true)}
             onDeleteExpense={handleDeleteTransaction}
+            onViewAll={() => setCurrentView(View.TRANSACTIONS)}
+          />
+        )}
+        {currentView === View.TRANSACTIONS && user && (
+          <Transactions 
+            user={user}
+            expenses={transactions} 
+            onDeleteExpense={handleDeleteTransaction}
           />
         )}
         {currentView === View.ANALYTICS && user && (
@@ -128,6 +137,7 @@ const App: React.FC = () => {
         onClose={() => setIsModalOpen(false)} 
         onAdd={handleAddTransaction}
         currency={user?.currency || 'USD'}
+        accounts={user?.accounts}
       />
 
       {/* UI Tour */}

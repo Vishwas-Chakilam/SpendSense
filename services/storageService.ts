@@ -1,5 +1,5 @@
 
-import { Transaction, UserProfile, Badge } from '../types';
+import { Transaction, UserProfile, Badge, Account } from '../types';
 import { BADGES } from '../constants';
 
 const KEYS = {
@@ -15,7 +15,8 @@ export const getTransactions = (): Transaction[] => {
   // Migration: Ensure all items have a type. Default to 'expense' for old data.
   return parsed.map((item: any) => ({
     ...item,
-    type: item.type || 'expense'
+    type: item.type || 'expense',
+    accountId: item.accountId || undefined // Ensure accountId is optional
   }));
 };
 
@@ -82,6 +83,21 @@ export const getUser = (): UserProfile | null => {
   
   const parsed = JSON.parse(data);
   
+  // Create default accounts if none exist
+  let accounts = parsed.accounts;
+  if (!accounts || accounts.length === 0) {
+    accounts = [
+      { id: 'default-cash', name: 'Cash', type: 'cash' as const, color: '#10b981' },
+      { id: 'default-bank', name: 'Bank Account', type: 'bank' as const, color: '#3b82f6' }
+    ];
+    // Save the updated user with default accounts
+    const updatedUser = {
+      ...parsed,
+      accounts
+    };
+    localStorage.setItem(KEYS.USER, JSON.stringify(updatedUser));
+  }
+  
   // Migration: Add new gamification fields, currency, budget, and tour status if missing
   return {
     ...parsed,
@@ -90,6 +106,7 @@ export const getUser = (): UserProfile | null => {
     longestStreak: parsed.longestStreak || 0,
     lastTransactionDate: parsed.lastTransactionDate || null,
     budget: parsed.budget || { amount: 0, period: 'monthly', categoryLimits: {} },
+    accounts: accounts,
     // If hasCompletedTour is undefined (existing user), default to true so they don't see the tour
     hasCompletedTour: parsed.hasCompletedTour ?? true,
   };
@@ -122,4 +139,52 @@ export const checkBadges = (transactions: Transaction[]) => {
       points: user.points + pointsToAdd
     });
   }
+};
+
+// Backup & Restore Functions
+export interface BackupData {
+  user: UserProfile;
+  transactions: Transaction[];
+  version: string;
+  exportDate: string;
+}
+
+export const exportBackup = (): BackupData => {
+  const user = getUser();
+  const transactions = getTransactions();
+  
+  if (!user) {
+    throw new Error('No user data found');
+  }
+
+  return {
+    user,
+    transactions,
+    version: '1.0',
+    exportDate: new Date().toISOString()
+  };
+};
+
+export const importBackup = (backupData: BackupData): void => {
+  // Validate backup data structure
+  if (!backupData.user || !backupData.transactions) {
+    throw new Error('Invalid backup file format');
+  }
+
+  // Validate user structure
+  if (!backupData.user.name || !backupData.user.currency) {
+    throw new Error('Invalid user data in backup file');
+  }
+
+  // Clear existing data
+  localStorage.removeItem(KEYS.TRANSACTIONS);
+  localStorage.removeItem(KEYS.USER);
+
+  // Restore transactions
+  if (Array.isArray(backupData.transactions) && backupData.transactions.length > 0) {
+    localStorage.setItem(KEYS.TRANSACTIONS, JSON.stringify(backupData.transactions));
+  }
+
+  // Restore user profile
+  localStorage.setItem(KEYS.USER, JSON.stringify(backupData.user));
 };

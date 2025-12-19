@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Transaction, UserProfile, BudgetPeriod } from '../types';
 import { formatCurrency, formatDate, CATEGORY_COLORS, CATEGORY_EMOJIS } from '../constants';
 import { Icons } from '../components/Icons';
@@ -9,9 +9,10 @@ interface Props {
   expenses: Transaction[]; 
   onAddClick: () => void;
   onDeleteExpense: (id: string) => void;
+  onViewAll?: () => void;
 }
 
-const Dashboard: React.FC<Props> = ({ user, expenses: transactions, onAddClick, onDeleteExpense }) => {
+const Dashboard: React.FC<Props> = ({ user, expenses: transactions, onAddClick, onDeleteExpense, onViewAll }) => {
   // Financial Summary Calculations
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -77,6 +78,22 @@ const Dashboard: React.FC<Props> = ({ user, expenses: transactions, onAddClick, 
     .filter(item => item.spent > 0) // Only show categories with activity
     .sort((a, b) => (b.spent / b.limit) - (a.spent / a.limit)); // Sort by % used
 
+  // Calculate account balances
+  const accountBalances = useMemo(() => {
+    const accounts = user.accounts || [];
+    return accounts.map(account => {
+      const accountTransactions = transactions.filter(t => t.accountId === account.id);
+      const income = accountTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+      const expense = accountTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+      const balance = income - expense;
+      return { account, balance, income, expense };
+    });
+  }, [user.accounts, transactions]);
+
   return (
     <div className="p-6 space-y-8 animate-fade-in">
       {/* Header */}
@@ -123,6 +140,38 @@ const Dashboard: React.FC<Props> = ({ user, expenses: transactions, onAddClick, 
             </div>
         </div>
       </div>
+
+      {/* Account Balances */}
+      {accountBalances.length > 0 && (
+        <div>
+          <h3 className="text-lg font-bold text-slate-800 mb-4">Account Balances</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {accountBalances.map(({ account, balance, income, expense }) => {
+              const accountIcon = account.type === 'cash' ? '💵' : account.type === 'bank' ? '🏦' : account.type === 'credit' ? '💳' : '📊';
+              return (
+                <div key={account.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">{accountIcon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-800 text-sm truncate">{account.name}</p>
+                      <p className="text-xs text-gray-400 capitalize">{account.type}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className={`text-xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {formatCurrency(balance, user.currency)}
+                    </p>
+                    <div className="flex gap-2 text-xs">
+                      <span className="text-green-600">+{formatCurrency(income, user.currency)}</span>
+                      <span className="text-red-600">-{formatCurrency(expense, user.currency)}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Budget Status Widget */}
       {user.budget.amount > 0 ? (
@@ -220,7 +269,14 @@ const Dashboard: React.FC<Props> = ({ user, expenses: transactions, onAddClick, 
       <div>
         <div className="flex justify-between items-end mb-4">
           <h3 className="text-lg font-bold text-slate-800">Recent Activity</h3>
-          <span className="text-xs text-brand-600 font-medium">View All</span>
+          {onViewAll && (
+            <button 
+              onClick={onViewAll}
+              className="text-xs text-brand-600 font-medium hover:text-brand-700 active:scale-95 transition-transform cursor-pointer"
+            >
+              View All
+            </button>
+          )}
         </div>
         
         {transactions.length === 0 ? (
@@ -241,7 +297,17 @@ const Dashboard: React.FC<Props> = ({ user, expenses: transactions, onAddClick, 
                   </div>
                   <div>
                     <h4 className="font-semibold text-slate-800">{t.title}</h4>
-                    <p className="text-xs text-gray-400">{formatDate(t.date)} • {t.category}</p>
+                    <p className="text-xs text-gray-400">
+                      {formatDate(t.date)} • {t.category}
+                      {t.accountId && user.accounts && user.accounts.length > 0 && (() => {
+                        const account = user.accounts.find(a => a.id === t.accountId);
+                        if (account) {
+                          const accountIcon = account.type === 'cash' ? '💵' : account.type === 'bank' ? '🏦' : account.type === 'credit' ? '💳' : '📊';
+                          return ` • ${accountIcon} ${account.name}`;
+                        }
+                        return '';
+                      })()}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

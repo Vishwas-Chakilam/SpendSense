@@ -27,6 +27,13 @@ const Layout: React.FC<Props> = ({ currentView, onChangeView, children }) => {
           label="Home"
         />
         <NavButton 
+          id="nav-transactions"
+          active={currentView === View.TRANSACTIONS} 
+          onClick={() => onChangeView(View.TRANSACTIONS)} 
+          icon={<Icons.List />} 
+          label="Transactions"
+        />
+        <NavButton 
           id="nav-analytics"
           active={currentView === View.ANALYTICS} 
           onClick={() => onChangeView(View.ANALYTICS)} 
@@ -49,14 +56,14 @@ const NavButton = ({ id, active, onClick, icon, label }: { id?: string; active: 
   <button 
     id={id}
     onClick={onClick}
-    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 w-20 ${
+    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 flex-1 ${
       active ? 'text-brand-600 bg-brand-50 scale-105' : 'text-gray-400 hover:text-gray-600'
     }`}
   >
-    <div className={`w-6 h-6 mb-1 ${active ? 'stroke-[2.5px]' : 'stroke-[2px]'}`}>
+    <div className={`w-5 h-5 mb-1 ${active ? 'stroke-[2.5px]' : 'stroke-[2px]'}`}>
       {icon}
     </div>
-    <span className="text-[10px] font-medium">{label}</span>
+    <span className="text-[9px] font-medium">{label}</span>
   </button>
 );
 

@@ -36,6 +36,10 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
           period: 'monthly',
           categoryLimits: {}
         },
+        accounts: [
+          { id: 'default-cash', name: 'Cash', type: 'cash', color: '#10b981' },
+          { id: 'default-bank', name: 'Bank Account', type: 'bank', color: '#3b82f6' }
+        ],
         hasCompletedTour: false // New users get the tour
       });
     }

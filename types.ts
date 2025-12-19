@@ -18,6 +18,14 @@ export type Category =
   | 'Gift'
   | 'Other Income';
 
+export interface Account {
+  id: string;
+  name: string;
+  type: 'bank' | 'cash' | 'credit' | 'other';
+  balance?: number; // Optional: can be calculated from transactions
+  color?: string; // Optional: for UI customization
+}
+
 export interface Transaction {
   id: string;
   type: TransactionType;
@@ -26,6 +34,7 @@ export interface Transaction {
   title: string;
   date: string; // ISO string
   notes?: string;
+  accountId?: string; // Optional for backward compatibility
 }
 
 export type BudgetPeriod = 'weekly' | 'monthly' | 'yearly';
@@ -45,6 +54,7 @@ export interface UserProfile {
   badges: string[];
   currency: string; // e.g. 'USD', 'EUR', 'INR'
   budget: BudgetConfig;
+  accounts?: Account[]; // Optional for backward compatibility
   
   // Gamification
   currentStreak: number;
@@ -79,6 +89,7 @@ export enum View {
   DASHBOARD = 'DASHBOARD',
   ANALYTICS = 'ANALYTICS',
   PROFILE = 'PROFILE',
+  TRANSACTIONS = 'TRANSACTIONS',
 }
 
 export interface ReceiptData {

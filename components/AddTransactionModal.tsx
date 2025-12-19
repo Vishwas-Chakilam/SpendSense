@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Category, Transaction, TransactionType } from '../types';
+import { Category, Transaction, TransactionType, Account } from '../types';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, getCurrencySymbol } from '../constants';
 import { Icons } from './Icons';
 import { scanReceipt } from '../services/geminiService';
@@ -9,16 +9,25 @@ interface Props {
   onClose: () => void;
   onAdd: (transaction: Omit<Transaction, 'id'>) => void;
   currency: string;
+  accounts?: Account[];
 }
 
-const AddTransactionModal: React.FC<Props> = ({ isOpen, onClose, onAdd, currency }) => {
+const AddTransactionModal: React.FC<Props> = ({ isOpen, onClose, onAdd, currency, accounts = [] }) => {
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<Category>('Food');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [accountId, setAccountId] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Set default account when accounts are loaded or modal opens
+  React.useEffect(() => {
+    if (isOpen && accounts.length > 0) {
+      setAccountId(accounts[0].id);
+    }
+  }, [isOpen, accounts]);
 
   if (!isOpen) return null;
 
@@ -33,6 +42,7 @@ const AddTransactionModal: React.FC<Props> = ({ isOpen, onClose, onAdd, currency
       title: title || 'Untitled',
       category: category || currentCategories[0],
       date: new Date(date).toISOString(),
+      accountId: accountId || undefined,
     });
     // Reset
     setAmount('');
@@ -40,6 +50,7 @@ const AddTransactionModal: React.FC<Props> = ({ isOpen, onClose, onAdd, currency
     setType('expense');
     setCategory('Food');
     setDate(new Date().toISOString().split('T')[0]);
+    setAccountId(accounts.length > 0 ? accounts[0].id : '');
     onClose();
   };
 
@@ -162,6 +173,27 @@ const AddTransactionModal: React.FC<Props> = ({ isOpen, onClose, onAdd, currency
               placeholder={type === 'income' ? 'e.g. Paycheck' : 'e.g. Starbucks'} 
             />
           </div>
+
+          {accounts.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">
+                {type === 'income' ? 'Income Account' : 'Expense Account'}
+              </label>
+              <select 
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+                className={`w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-slate-900 focus:ring-2 outline-none appearance-none ${
+                    type === 'income' ? 'focus:ring-green-500' : 'focus:ring-brand-500'
+                }`}
+              >
+                {accounts.map(account => (
+                  <option key={account.id} value={account.id}>
+                    {account.name} ({account.type === 'cash' ? '💵' : account.type === 'bank' ? '🏦' : account.type === 'credit' ? '💳' : '📊'})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
