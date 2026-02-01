@@ -77,19 +77,5 @@
   <body class="bg-gray-50 text-slate-900 h-screen overflow-hidden selection:bg-brand-100">
     <div id="root" class="h-full w-full"></div>
   <script type="module" src="/index.tsx"></script>
-  <script>
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
-  </script>
 </body>
 </html>

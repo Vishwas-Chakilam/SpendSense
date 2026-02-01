@@ -1,0 +1,50 @@
+{
+  "packageId": "app.netlify.incomparable_banoffee_1d78b4.twa",
+  "host": "incomparable-banoffee-1d78b4.netlify.app/",
+  "name": "Spendsense - Expense Tracker",
+  "launcherName": "Spendsense",
+  "display": "standalone",
+  "themeColor": "#0EA5E9",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#F9FAFB",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://incomparable-banoffee-1d78b4.netlify.app/web-app-manifest-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "android.keystore",
+    "alias": "spendsense-key"
+  },
+  "appVersionName": "1",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://incomparable-banoffee-1d78b4.netlify.app/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://incomparable-banoffee-1d78b4.netlify.app/",
+  "minSdkVersion": 21,
+  "orientation": "portrait-primary",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "1"
+}

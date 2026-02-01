@@ -25,3 +25,29 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Android build files
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+android/app/release/
+android/app/debug/
+
+# Android keystore files (NEVER commit these!)
+android/*.keystore
+android/*.jks
+*.keystore
+*.jks
+
+# Android signed files
+*.idsig
+*.apk.idsig

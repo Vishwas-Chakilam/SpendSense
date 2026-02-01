@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.netlify.incomparable_banoffee_1d78b4.twa",
+      "sha256_cert_fingerprints": [
+        "4B:69:E1:0F:30:CA:C0:4F:B9:5C:99:76:AF:98:D8:23:71:9B:B1:D5:A0:EE:1B:63:07:19:31:0F:68:72:7B:FF"
+      ]
+    }
+  }
+]
