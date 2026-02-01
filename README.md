@@ -1,12 +1,14 @@
 <div align="center">
   <h1>💰 Spendsense</h1>
   <p><strong>AI-Powered Expense Tracker with Gamification</strong></p>
-  <p>A modern Progressive Web App (PWA) that makes personal finance management fun and intuitive</p>
+  <p>A modern Progressive Web App (PWA) and Android app that makes personal finance management fun and intuitive</p>
   
   [![Live Demo](https://img.shields.io/badge/Live%20Demo-Spendsense-blue?style=for-the-badge)](https://spendsense-one.netlify.app)
   [![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
   [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+  [![PWA](https://img.shields.io/badge/PWA-Enabled-4285F4?style=for-the-badge&logo=pwa)](https://web.dev/progressive-web-apps/)
+  [![Android](https://img.shields.io/badge/Android-Available-3DDC84?style=for-the-badge&logo=android)](https://www.android.com/)
 </div>
 
 ---
@@ -39,9 +41,16 @@
 
 ### 📱 Progressive Web App (PWA)
 - Install directly on your phone or desktop
-- Works offline with local storage
-- No app store needed!
+- Works offline with service worker caching
+- Auto-updates with background sync
 - Native app-like experience
+- No app store needed for web version!
+
+### 🤖 Android App
+- Native Android app built with Trusted Web Activity (TWA)
+- Full-screen experience without browser UI
+- Deep linking support
+- Available as APK or ready for Google Play Store
 
 ### 📤 Data Export
 - Export transactions to PDF
@@ -100,13 +109,25 @@
 npm run build
 ```
 
-The built files will be in the `dist` directory.
+The built files will be in the `dist` directory. The PWA manifest and service worker will be automatically generated.
+
+### Building Android App
+
+To build the Android app, see the comprehensive [Android Setup Guide](ANDROID_SETUP.md). Quick steps:
+
+1. Install Bubblewrap CLI: `npm install -g @bubblewrap/cli`
+2. Navigate to android folder: `cd android`
+3. Build APK: `bubblewrap build --universalApk`
+
+For detailed instructions, see [ANDROID_SETUP.md](ANDROID_SETUP.md).
 
 ---
 
-## 📲 Installing as a PWA
+## 📲 Installation Options
 
-### On Mobile (Android/iPhone)
+### Option 1: Install as PWA (Web)
+
+#### On Mobile (Android/iPhone)
 
 1. Open the app in your browser: [https://spendsense-one.netlify.app](https://spendsense-one.netlify.app)
 2. **Android (Chrome):**
@@ -118,12 +139,22 @@ The built files will be in the `dist` directory.
    - Scroll down and tap "Add to Home Screen"
    - Tap "Add" to confirm
 
-### On Desktop (Chrome/Edge)
+#### On Desktop (Chrome/Edge)
 
 1. Visit [https://spendsense-one.netlify.app](https://spendsense-one.netlify.app)
 2. Look for the install icon (⊕) in the address bar
 3. Click it and select "Install"
 4. The app will open in its own window, just like a native app!
+
+### Option 2: Install Android App (APK)
+
+1. **Download the APK** from the releases or build it yourself (see [Android Setup Guide](ANDROID_SETUP.md))
+2. **Enable installation from unknown sources** on your Android device:
+   - Go to Settings → Security → Enable "Install from unknown sources"
+3. **Install the APK** by tapping on the downloaded file
+4. **Launch Spendsense** from your app drawer
+
+> **Note:** The Android app provides a full-screen native experience without browser UI. For building your own APK, see the [Android Setup Guide](ANDROID_SETUP.md).
 
 ---
 
@@ -137,7 +168,8 @@ The built files will be in the `dist` directory.
 - **AI Integration:** Google Gemini AI
 - **PDF Export:** jsPDF
 - **Excel Export:** xlsx
-- **PWA:** Service Worker + Web App Manifest
+- **PWA:** Vite PWA Plugin with Service Worker + Web App Manifest
+- **Android:** Bubblewrap CLI + Trusted Web Activity (TWA)
 
 ---
 
@@ -145,6 +177,11 @@ The built files will be in the `dist` directory.
 
 ```
 spendsense/
+├── android/             # Android TWA project (Bubblewrap)
+│   ├── app/             # Android app source code
+│   ├── gradle/          # Gradle wrapper
+│   ├── twa-manifest.json  # TWA configuration
+│   └── build.gradle     # Build configuration
 ├── components/          # Reusable React components
 │   ├── AddTransactionModal.tsx
 │   ├── Icons.tsx
@@ -158,16 +195,21 @@ spendsense/
 │   ├── Analytics.tsx
 │   ├── Dashboard.tsx
 │   ├── Onboarding.tsx
-│   └── Profile.tsx
+│   ├── Profile.tsx
+│   └── Transactions.tsx
 ├── public/              # Static assets and PWA files
-│   ├── manifest.json
-│   ├── sw.js
+│   ├── .well-known/     # TWA validation files
+│   │   └── assetlinks.json
+│   ├── web-app-manifest-192x192.png
+│   ├── web-app-manifest-512x512.png
 │   └── logo.png
 ├── App.tsx              # Main app component
 ├── index.tsx            # Entry point
 ├── types.ts             # TypeScript type definitions
 ├── constants.tsx        # App constants and configurations
-└── vite.config.ts       # Vite configuration
+├── vite.config.ts       # Vite configuration with PWA plugin
+├── ANDROID_SETUP.md     # Android app setup guide
+└── README.md            # This file
 ```
 
 ---
@@ -194,6 +236,12 @@ Uses Google Gemini AI to analyze receipt images and extract:
 - Real-time budget status
 
 ---
+
+## 📚 Documentation
+
+- **[Android Setup Guide](ANDROID_SETUP.md)** - Complete guide for building and deploying the Android app
+- **[PWA Setup Summary](PWA_SETUP_SUMMARY.md)** - PWA configuration overview
+- **[GitHub Commit Guide](GITHUB_COMMIT_GUIDE.md)** - Guide for committing Android setup files
 
 ## 🤝 Contributing
 
